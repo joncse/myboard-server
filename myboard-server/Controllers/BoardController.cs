@@ -24,22 +24,12 @@ namespace myboard_server.Controllers
 
         private Board GetBoardFromDatabase()
         {
-            Board board = default(Board);
-
             using (var session = RavenDatabase.GetSession())
             {
-                board = session.Load<Board>(Board.BoardId);
-
-                if (board == null)
-                {
-                    board = new Board();
-                    session.Store(board);
-                }
-
-                session.SaveChanges();
+                var repo = new BoardRepository(session);
+                return repo.Get();
             }
-
-            return board;
         }
+
     }
 }
