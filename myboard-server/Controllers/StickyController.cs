@@ -63,7 +63,7 @@ namespace myboard_server.Controllers
                 boardRepo.Save(board);
             }
 
-            return Request.CreateResponse(HttpStatusCode.OK);
+            return Request.CreateResponse<string>(HttpStatusCode.OK, sticky.Id);
         }
 
         public HttpResponseMessage Delete(string id)
