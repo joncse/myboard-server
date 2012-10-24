@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using myboard_server.Database;
 using myboard_server.Models;
 
 namespace myboard_server.Controllers
@@ -11,11 +12,32 @@ namespace myboard_server.Controllers
     public class BoardController : ApiController
     {
         // GET api/board
-        public Board Get()
+        public HttpResponseMessage Get()
         {
-            var board = new Board();
-            board.Stickies.Add(new Sticky { Content = "Hello World!", X = 5, Y = 10 });
-            board.Stickies.Add(new Sticky { Content = "Goodbye World!", X = 15, Y = 20 });
+            Board board = GetBoardFromDatabase();
+
+            if (board == null)
+                return Request.CreateErrorResponse(HttpStatusCode.NotFound, "No board found.");
+            else
+                return Request.CreateResponse<Board>(HttpStatusCode.OK, board);
+        }
+
+        private Board GetBoardFromDatabase()
+        {
+            Board board = default(Board);
+
+            using (var session = RavenDatabase.GetSession())
+            {
+                board = session.Load<Board>(Board.BoardId);
+
+                if (board == null)
+                {
+                    board = new Board();
+                    session.Store(board);
+                }
+
+                session.SaveChanges();
+            }
 
             return board;
         }

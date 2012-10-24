@@ -12,7 +12,7 @@ namespace myboard_server.Database
         private static IDocumentStore store;
         private static object locker = new object();
 
-        public static RavenDatabase()
+        static RavenDatabase()
         {
             Initialize();
         }
@@ -33,7 +33,7 @@ namespace myboard_server.Database
             }
         }
 
-        public IDocumentSession GetSession()
+        public static IDocumentSession GetSession()
         {
             return store.OpenSession();
         }
